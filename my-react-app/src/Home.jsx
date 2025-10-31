@@ -14,7 +14,7 @@ function Home()
     const payload = { question:text}; // data to send
     console.log(payload)
 
-    const res = await fetch("http://127.0.0.1:8000/AIGenerator/", {
+    const res = await fetch("http://ec2-13-48-104-182.eu-north-1.compute.amazonaws.com/AIGenerator/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
