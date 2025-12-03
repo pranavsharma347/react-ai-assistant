@@ -1,6 +1,6 @@
 
 
-function Welcome(pros) {
+function demo(pros) {
 
   return (
     <>
@@ -11,4 +11,4 @@ function Welcome(pros) {
   )
 }
 
-export default Welcome;
+export default demo;

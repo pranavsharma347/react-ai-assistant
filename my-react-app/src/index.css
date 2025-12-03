@@ -35,6 +35,11 @@ h1 {
   line-height: 1.1;
 }
 
+.my-5{
+  margin-top: 6rem !important;
+  margin-bottom: 3rem !important;
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -54,7 +59,7 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
+/* @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
     background-color: #ffffff;
@@ -65,4 +70,40 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+} */
+
+
+/* Ensure sidebar visible by default on large screens */
+@media (min-width: 768px) {
+  .sidebar {
+    width: 230px !important;
+  }
+}
+
+/* On mobile, sidebar is hidden by default */
+@media (max-width: 767px) {
+  .sidebar {
+    width: 0;
+  }
+}
+
+
+/* Dropdown menu style for black navbar */
+.custom-dropdown {
+  background-color: #ffffff !important; /* white background */
+  color: #000 !important;               /* black text */
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+/* Dropdown item */
+.custom-dropdown .dropdown-item {
+  color: #000 !important;
+  font-weight: 500;
+}
+
+/* Dropdown hover */
+.custom-dropdown .dropdown-item:hover {
+  background-color: #0d6efd !important; /* blue hover */
+  color: #fff !important;
 }
