@@ -6,6 +6,15 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 function ResetPassword() {
   const { uidb64, token } = useParams();
 
+  /* 🛡 SAFETY GUARD (MOST IMPORTANT) */
+  if (!uidb64 || !token) {
+    return (
+      <div style={{ color: "white", padding: 40 }}>
+        Invalid or broken reset link.
+      </div>
+    );
+  }
+
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -17,22 +26,24 @@ function ResetPassword() {
   const [checkingToken, setCheckingToken] = useState(true);
   const [validToken, setValidToken] = useState(false);
 
-  // 🎨 Theme (UNCHANGED)
+  /* 🎨 THEME (UNCHANGED) */
   const bg = "#0D0D0D";
   const cardBg = "#1A1A1A";
   const text = "#FFFFFF";
   const muted = "#BBBBBB";
   const border = "#333";
 
-  // 🔐 VERIFY RESET TOKEN
+  /* 🔐 VERIFY RESET TOKEN */
   useEffect(() => {
     const verifyToken = async () => {
       try {
         await axios.get(
-          `https://geniehub.duckdns.org/user/password-reset/${uidb64}/${token}/`
+          `https://geniehub.duckdns.org/user/password-reset/${uidb64}/${token}/`,
+          { timeout: 10000 }
         );
         setValidToken(true);
-      } catch {
+      } catch (err) {
+        console.error("Token verification failed:", err);
         setError("❌ Reset link is invalid or expired");
       } finally {
         setCheckingToken(false);
@@ -41,7 +52,7 @@ function ResetPassword() {
     verifyToken();
   }, [uidb64, token]);
 
-  // 🔁 RESET PASSWORD
+  /* 🔁 RESET PASSWORD */
   const handleResetPassword = async () => {
     setError("");
     setMessage("");
@@ -76,16 +87,17 @@ function ResetPassword() {
           password2,
           uidb64,
           token,
-        }
+        },
+        { timeout: 10000 }
       );
 
       setMessage("✅ Password reset successful! You can now login.");
     } catch (err) {
-      console.log(err);
+      console.error("Password reset failed:", err);
       setError(
         err.response?.data?.error ||
-        err.response?.data?.message ||
-        "❌ Failed to reset password. Try again."
+          err.response?.data?.message ||
+          "❌ Failed to reset password. Try again."
       );
     } finally {
       setLoading(false);
@@ -138,21 +150,14 @@ function ResetPassword() {
           IntelliDocs — Create a new password for your account
         </p>
 
-        {/* ERROR */}
         {error && (
-          <div className="alert alert-danger py-2 text-center">
-            {error}
-          </div>
+          <div className="alert alert-danger py-2 text-center">{error}</div>
         )}
 
-        {/* SUCCESS */}
         {message && (
-          <div className="alert alert-success py-2 text-center">
-            {message}
-          </div>
+          <div className="alert alert-success py-2 text-center">{message}</div>
         )}
 
-        {/* FORM */}
         {validToken && !message && (
           <>
             {/* NEW PASSWORD */}
@@ -205,18 +210,6 @@ function ResetPassword() {
               </span>
             </div>
 
-            {/* PASSWORD RULES */}
-            <div style={{ color: muted, fontSize: "13px", marginBottom: "15px" }}>
-              <strong>Password requirements:</strong>
-              <ul style={{ paddingLeft: "18px", marginTop: "5px" }}>
-                <li>✔ 8–64 characters long</li>
-                <li>✔ At least 1 uppercase letter</li>
-                <li>✔ At least 1 lowercase letter</li>
-                <li>✔ At least 1 number</li>
-                <li>✔ At least 1 special character (@$!%*?&)</li>
-              </ul>
-            </div>
-
             {/* BUTTON */}
             <button
               onClick={handleResetPassword}
@@ -227,7 +220,6 @@ function ResetPassword() {
                 color: "#fff",
                 borderRadius: 30,
                 opacity: loading ? 0.7 : 1,
-                cursor: loading ? "not-allowed" : "pointer",
               }}
             >
               {loading ? "Resetting..." : "Reset Password"}
@@ -235,7 +227,6 @@ function ResetPassword() {
           </>
         )}
 
-        {/* BACK TO LOGIN */}
         <div className="text-center mt-3">
           <Link to="/login" style={{ color: "#FF7B00", fontSize: 14 }}>
             ← Back to Login
@@ -247,7 +238,6 @@ function ResetPassword() {
 }
 
 export default ResetPassword;
-
 
 
 
