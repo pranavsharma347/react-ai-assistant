@@ -6,114 +6,87 @@ import { isAuthenticated, logoutUser } from "./utils/auth";
 function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-
   const isLoggedIn = isAuthenticated();
 
   const handleLogout = async () => {
     await logoutUser();
     navigate("/login");
   };
+
   return (
     <nav
-      className="navbar navbar-expand-lg px-4 shadow-sm fixed-top"
+      className="navbar navbar-expand-lg fixed-top shadow-sm"
       style={{
         backgroundColor: theme === "dark" ? "#0D0D0D" : "#FFFFFF",
-        color: theme === "dark" ? "#FFFFFF" : "#000000",
         borderBottom: "1px solid rgba(0,0,0,0.1)",
       }}
     >
-      {/* BRAND */}
-      <Link
-        className="navbar-brand fw-bold fs-4"
-        to="/"
-        style={{ color: theme === "dark" ? "#ff7b00" : "#d35400" }}
-      >
-        IntelliDocs
-      </Link>
+      <div className="container">
 
-      <button
-        className="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
-      >
-        <span className="navbar-toggler-icon"></span>
-      </button>
+        {/* BRAND */}
+        <Link
+          className="navbar-brand fw-bold fs-4"
+          to="/"
+          style={{ color: theme === "dark" ? "#ff7b00" : "#d35400" }}
+        >
+          IntelliDocs
+        </Link>
 
-      <div className="collapse navbar-collapse" id="navbarNav">
-        <ul className="navbar-nav ms-auto align-items-center">
+        {/* TOGGLER */}
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
 
+        {/* COLLAPSE */}
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav ms-auto text-center align-items-lg-center">
 
-          {/* THEME TOGGLE */}
-          <li className="nav-item me-3">
-            <button
-              onClick={toggleTheme}
-              className="btn ui-btn"
-              style={{
-                backgroundColor: theme === "dark" ? "#ff7b00" : "#222",
-                color: theme === "dark" ? "#000" : "#FFF",
-                borderRadius: "30px",
-                padding: "6px 18px",
-                fontWeight: "600",
-              }}
-            >
-              {theme === "dark" ? "☀ Light" : "🌙 Dark"}
-            </button>
-          </li>
+            {/* THEME TOGGLE */}
+            <li className="nav-item my-2 my-lg-0 me-lg-3">
+              <button
+                onClick={toggleTheme}
+                className="btn"
+                style={{
+                  minWidth: "110px",
+                  backgroundColor: theme === "dark" ? "#ff7b00" : "#222",
+                  color: theme === "dark" ? "#000" : "#FFF",
+                  borderRadius: "30px",
+                  padding: "6px 14px",
+                  fontWeight: "600",
+                }}
+              >
+                {theme === "dark" ? "☀ Light" : "🌙 Dark"}
+              </button>
+            </li>
 
-          {/* ================= LOGIN KE BAAD ================= */}
-          {isLoggedIn && (
-            <>
-              {/* SMART TOOLS */}
-              <li className="nav-item dropdown me-3">
-                <span
-                  className="nav-link dropdown-toggle fw-semibold"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  style={{
-                    color: theme === "dark" ? "#FFFFFF" : "#000000",
-                    cursor: "pointer"
-                  }}
-                >
-                  🧠 Smart Tools
-                </span>
+            {/* ============ LOGIN KE BAAD ============ */}
+            {isLoggedIn && (
+              <>
+                {/* SMART TOOLS */}
+                <li className="nav-item dropdown my-2 my-lg-0 me-lg-3">
+                  <span
+                    className="nav-link dropdown-toggle fw-semibold"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    style={{
+                      color: theme === "dark" ? "#FFF" : "#000",
+                      cursor: "pointer",
+                    }}
+                  >
+                    🧠 Smart Tools
+                  </span>
 
-                <ul
-                  className="dropdown-menu dropdown-menu-end"
-                  style={{
-                    backgroundColor: theme === "dark" ? "#1A1A1A" : "#FFFFFF",
-                    border: theme === "dark" ? "1px solid #333" : "1px solid #ddd",
-                  }}
-                >
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to="/webinsight"
-                      style={{ color: theme === "dark" ? "#FFF" : "#000" }}
-                    >
-                      🌐 WebInsight
-                    </Link>
-                  </li>
-
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to="/pdfinsight"
-                      style={{ color: theme === "dark" ? "#FFF" : "#000" }}
-                    >
-                      📄 PDFInsight
-                    </Link>
-                  </li>
-
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to="/replyAI"
-                      style={{ color: theme === "dark" ? "#FFF" : "#000" }}
-                    >
-                      🤖 SmartReply AI
-                    </Link>
-                  </li><ul className="dropdown-menu dropdown-menu-end">
+                  <ul
+                    className="dropdown-menu dropdown-menu-end"
+                    style={{
+                      backgroundColor: theme === "dark" ? "#1A1A1A" : "#FFF",
+                    }}
+                  >
                     <li>
                       <Link className="dropdown-item" to="/webinsight">
                         🌐 WebInsight
@@ -130,67 +103,69 @@ function Navbar() {
                       </Link>
                     </li>
                   </ul>
+                </li>
 
-                </ul>
-              </li>
+                {/* PROFILE */}
+                <li className="nav-item dropdown my-2 my-lg-0">
+                  <button
+                    className="btn btn-outline-primary dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    style={{
+                      borderRadius: "30px",
+                      padding: "6px 14px",
+                      minWidth: "160px",
+                    }}
+                  >
+                    👤 {localStorage.getItem("user_email")}
+                  </button>
 
+                  <ul className="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <Link className="dropdown-item" to="/profile">
+                        My Profile
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="dropdown-item" to="/settings">
+                        Settings
+                      </Link>
+                    </li>
+                    <li><hr className="dropdown-divider" /></li>
+                    <li>
+                      <button
+                        className="dropdown-item text-danger"
+                        onClick={handleLogout}
+                      >
+                        🚪 Logout
+                      </button>
+                    </li>
+                  </ul>
+                </li>
+              </>
+            )}
 
-              {/* PROFILE */}
-              <li className="nav-item dropdown">
-                <button
-                  className="btn btn-outline-primary dropdown-toggle"
-                  data-bs-toggle="dropdown"
-                  style={{ borderRadius: "30px" }}
+            {/* ============ LOGIN SE PEHLE ============ */}
+            {!isLoggedIn && (
+              <li className="nav-item my-2 my-lg-0">
+                <Link
+                  to="/login"
+                  className="btn btn-primary"
+                  style={{
+                    minWidth: "110px",
+                    background: "linear-gradient(90deg, #ff7b00, #ffa733)",
+                    border: "none",
+                    borderRadius: "30px",
+                    padding: "6px 16px",
+                    fontWeight: "600",
+                  }}
                 >
-                  👤 {localStorage.getItem("user_email")}
-
-                </button>
-
-                <ul className="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <Link className="dropdown-item" to="/profile">
-                      My Profile
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="/settings">
-                      Settings
-                    </Link>
-                  </li>
-                  <li><hr className="dropdown-divider" /></li>
-                  <li>
-                    <button
-                      className="dropdown-item text-danger"
-                      onClick={handleLogout}
-                    >
-                      🚪 Logout
-                    </button>
-                  </li>
-                </ul>
+                  Login
+                </Link>
               </li>
-            </>
-          )}
+            )}
 
-          {/* ================= LOGIN SE PEHLE ================= */}
-          {!isLoggedIn && (
-            <li className="nav-item">
-              <Link
-                to="/login"
-                className="btn btn-primary ui-btn"
-                style={{
-                  background: "linear-gradient(90deg, #ff7b00, #ffa733)",
-                  border: "none",
-                  borderRadius: "30px",
-                  padding: "6px 20px",
-                  fontWeight: "600",
-                }}
-              >
-                Login
-              </Link>
-            </li>
-          )}
-
-        </ul>
+          </ul>
+        </div>
       </div>
     </nav>
   );
