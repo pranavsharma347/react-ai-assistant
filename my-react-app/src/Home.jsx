@@ -3,6 +3,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "./ThemeContext";
 import { useNavigate } from "react-router-dom";
+import pranavImg from "./images/pranav.png";
+
 
 import {
   FaLinkedin,
@@ -123,7 +125,8 @@ function Home() {
         ></div>
 
         <img
-          src="/src/images/pranav.png"
+          // src="/src/images/pranav.png"
+          src={pranavImg}
           alt="Founder"
           className="img-fluid position-relative"
           style={{
@@ -150,13 +153,13 @@ function Home() {
         </p>
 
         <p className="fs-6" style={{ color: secondaryText }}>
-          Backend & AI Engineer | Python • Django • FastAPI • LangChain • RAG
+            Software Engineer | Python • Django • RestAPI • LangChain • RAG • Generative AI
         </p>
 
         {/* SOCIAL ICON BUTTONS */}
         <div className="mt-3 d-flex flex-wrap gap-3">
           <a
-            href="www.linkedin.com/in/pranav-sharma98"
+            href="https://www.linkedin.com/in/pranav-sharma98"
             className={`btn rounded-pill px-3 d-flex align-items-center gap-2 ${
               theme === "light" ? "btn-outline-dark" : "btn-outline-light"
             }`}
