@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useTheme } from "./ThemeContext";
 import { getAccessToken } from "./utils/auth";
@@ -13,14 +12,19 @@ function PDFInsight() {
   const [answer, setAnswer] = useState("");
   const [error, setError] = useState("");
 
-  // THEME COLORS
+  // ===== THEME COLORS =====
   const isDark = theme === "dark";
   const pageBg = isDark ? "#0D0D0D" : "#F9F9F9";
   const cardBg = isDark ? "#1A1A1A" : "#FFFFFF";
   const textColor = isDark ? "#FFFFFF" : "#000000";
-  const subText = isDark ? "#BBBBBB" : "#555555";
-  const inputBg = isDark ? "#111" : "#FFF";
-  const inputBorder = isDark ? "#444" : "#CCC";
+  const subText = isDark ? "#CCCCCC" : "#555555";
+  const inputBg = isDark ? "#111111" : "#FFFFFF";
+  const inputBorder = isDark ? "#555555" : "#CCCCCC";
+  const text = theme === "light" ? "#000000" : "#FFFFFF";
+
+
+  // 🔥 EXTRA CLEAR PLACEHOLDER COLORS
+  const placeholderColor = isDark ? "#E0E0E0" : "#666666";
 
   const token = getAccessToken();
 
@@ -33,6 +37,7 @@ function PDFInsight() {
       setError("⚠️ Please enter your question.");
       return;
     }
+
     if (!pdf1 && !pdf2 && !pdf3) {
       setError("⚠️ Please upload at least one PDF file.");
       return;
@@ -47,7 +52,6 @@ function PDFInsight() {
     setAnswer("⏳ Analyzing your PDFs...");
 
     try {
-      
       const res = await fetch("https://geniehub.duckdns.org/testlambda/", {
         method: "POST",
         headers: {
@@ -59,10 +63,7 @@ function PDFInsight() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(
-          data.error ||
-          "⚠️ Something went wrong. Please try again."
-        );
+        setError(data.error || "⚠️ Something went wrong. Please try again.");
         setAnswer("");
         return;
       }
@@ -83,26 +84,31 @@ function PDFInsight() {
         color: textColor,
       }}
     >
-      <div className="container py-4" style={{ maxWidth: "900px" }}>
+      {/* 🔥 STRONG PLACEHOLDER FIX */}
+      <style>
+        {`
+          .pdfinsight-input::placeholder {
+            color: ${placeholderColor};
+            opacity: 1;
+            font-weight: 500;
+          }
+        `}
+      </style>
 
-        {/* Title Section */}
-        <h2 className="fw-bold text-center mb-3" style={{ color: textColor }}>
-          📘 PDFInsight AI
-        </h2>
+      <div className="container py-4" style={{ maxWidth: "900px" }}>
+        {/* Title */}
+        <h2 className="fw-bold text-center mb-3">📘 PDFInsight AI</h2>
         <p className="text-center mb-4" style={{ color: subText }}>
           Upload multiple PDFs and get accurate AI-generated answers in seconds.
         </p>
 
-        {/* Main Card */}
+        {/* Card */}
         <div
           className="card p-4 shadow-sm border-0 rounded-4"
-          style={{
-            backgroundColor: cardBg,
-            color: textColor,
-          }}
+          style={{ backgroundColor: cardBg }}
         >
           <form onSubmit={handleSubmit}>
-            <label className="form-label fw-semibold" style={{ color: textColor }}>
+            <label className="form-label fw-semibold" style={{ color: text }}>
               Upload PDF files
             </label>
 
@@ -111,7 +117,7 @@ function PDFInsight() {
                 key={idx}
                 type="file"
                 accept="application/pdf"
-                className="form-control mb-2"
+                className="form-control mb-2 pdfinsight-input"
                 style={{
                   backgroundColor: inputBg,
                   color: textColor,
@@ -121,12 +127,12 @@ function PDFInsight() {
               />
             ))}
 
-            <label className="form-label fw-semibold" style={{ color: textColor }}>
+            <label className="form-label fw-semibold" style={{ color: text }}>
               Your Question *
             </label>
 
             <textarea
-              className="form-control mb-3"
+              className="form-control mb-3 pdfinsight-input" 
               placeholder="Ask anything related to the uploaded PDFs..."
               style={{
                 height: "120px",
@@ -138,30 +144,35 @@ function PDFInsight() {
               onChange={(e) => setQuestion(e.target.value)}
             />
 
-            <button type="submit" className="btn btn-success w-100 py-2 fw-bold">
+            <button
+              type="submit"
+              className="btn btn-success w-100 py-2 fw-bold"
+            >
               🤖 Get Answer from PDFs
             </button>
           </form>
         </div>
 
-        {/* Error Message */}
+        {/* Error */}
         {error && (
-          <div className="alert alert-danger text-center mt-4">{error}</div>
+          <div className="alert alert-danger text-center mt-4">
+            {error}
+          </div>
         )}
 
-        {/* Answer Box */}
+        {/* Answer */}
         {answer && !error && (
           <div
             className="card mt-4 shadow-sm border-0 rounded-4"
-            style={{ backgroundColor: cardBg, color: textColor }}
+            style={{ backgroundColor: cardBg }}
           >
             <div className="card-body">
-              <label className="form-label fw-bold" style={{ color: textColor }}>
+              <label className="form-label fw-bold">
                 AI Response
               </label>
 
               <textarea
-                className="form-control"
+                className="form-control pdfinsight-input"
                 style={{
                   height: "350px",
                   backgroundColor: inputBg,
@@ -170,7 +181,7 @@ function PDFInsight() {
                 }}
                 readOnly
                 value={answer}
-              ></textarea>
+              />
             </div>
           </div>
         )}

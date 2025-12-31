@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FcGoogle } from "react-icons/fc";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { handleGoogleLogin as googleAuth } from "./utils/auth";
 import { GoogleLogin } from "@react-oauth/google";
-
+import { handleGoogleLogin as googleAuth } from "./utils/auth";
 
 function Signup() {
   const navigate = useNavigate();
@@ -16,8 +14,7 @@ function Signup() {
 
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-
-  const [loading, setLoading] = useState(false); // 🔥 GLOBAL LOADER
+  const [loading, setLoading] = useState(false);
 
   const [timer, setTimer] = useState(0);
   const [canResend, setCanResend] = useState(false);
@@ -28,21 +25,21 @@ function Signup() {
   const muted = "#BBBBBB";
   const border = "#333";
 
-  // ⏳ TIMER
+  /* ⏳ RESEND TIMER */
   useEffect(() => {
     let interval;
     if (timer > 0) {
-      interval = setInterval(() => setTimer(t => t - 1), 1000);
+      interval = setInterval(() => setTimer((t) => t - 1), 1000);
     } else if (timer === 0 && message) {
       setCanResend(true);
     }
     return () => clearInterval(interval);
   }, [timer, message]);
 
-  // 🔐 SIGNUP
+  /* 🔐 NORMAL SIGNUP */
   const handleSignup = async () => {
     const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,64}$/;
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,64}$/;
 
     setError("");
     setMessage("");
@@ -54,12 +51,12 @@ function Signup() {
 
     if (!passwordRegex.test(password)) {
       setError(
-        "❌ Password must be 8–64 characters long and include uppercase, lowercase, number, and special character."
+        "❌ Password must be 8–64 characters and include uppercase, lowercase, number, and special character."
       );
       return;
     }
 
-    setLoading(true); // 🔥 START LOADER
+    setLoading(true);
 
     try {
       const res = await axios.post(
@@ -70,39 +67,36 @@ function Signup() {
       setMessage(res.data.message);
       setTimer(600);
       setCanResend(false);
-
     } catch (err) {
-      if (err.response?.data?.password) {
-        setError(err.response.data.password[0]);
-      } else if (err.response?.data?.email) {
-        setError(err.response.data.email[0]);
-      } else if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else {
-        setError("❌ Registration failed. Please try again.");
-      }
+      setError(
+        err.response?.data?.message ||
+          err.response?.data?.email?.[0] ||
+          err.response?.data?.password?.[0] ||
+          "❌ Registration failed"
+      );
     } finally {
-      setLoading(false); // 🔥 STOP LOADER
+      setLoading(false);
     }
   };
 
+  /* 🔐 GOOGLE LOGIN (FIXED VERSION) */
+  const handleGoogleLogin = async (credentialResponse) => {
+    try {
+      setLoading(true);
+      setError(""); // 🔥 CLEAR OLD ERROR
 
-  // 🔐 GOOGLE LOGIN (WITH LOADER)
-    const handleGoogleLogin = async (credentialResponse) => {
-      try {
-        setLoading(true); // 🔥 START LOADER
-        await googleAuth(credentialResponse);
-        navigate(redirectTo);
-      } catch (err) {
-        console.error(err);
-        setError("❌ Google login failed");
-      } finally {
-        setLoading(false); // 🔥 STOP LOADER
-      }
-    };
-  
+      await googleAuth(credentialResponse);
 
-  // 🔁 RESEND VERIFICATION EMAIL
+      navigate("/"); // ✅ SUCCESS → HOME
+    } catch (err) {
+      console.error(err);
+      setError("❌ Google login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* 🔁 RESEND EMAIL */
   const handleResend = async () => {
     try {
       setLoading(true);
@@ -121,36 +115,49 @@ function Signup() {
   };
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      backgroundColor: bg,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    }}>
-      {/* 🔥 FULL SCREEN LOADER */}
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: bg,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      {/* 🔥 GLOBAL LOADER */}
       {loading && (
-        <div style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.6)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 9999,
-          color: "#fff",
-          fontSize: 18,
-        }}>
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.6)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+            color: "#fff",
+            fontSize: 18,
+          }}
+        >
           Processing… Please wait
         </div>
       )}
 
-      <div className="row w-100 shadow-lg rounded-4"
-        style={{ maxWidth: "900px", backgroundColor: cardBg, border: `1px solid ${border}` }}
+      <div
+        className="row w-100 shadow-lg rounded-4"
+        style={{
+          maxWidth: "900px",
+          backgroundColor: cardBg,
+          border: `1px solid ${border}`,
+        }}
       >
         {/* LEFT */}
-        <div className="col-md-6 d-none d-md-flex flex-column justify-content-center p-5"
-          style={{ background: "linear-gradient(135deg, #FF7B00, #FF5100)", color: "#fff" }}
+        <div
+          className="col-md-6 d-none d-md-flex flex-column justify-content-center p-5"
+          style={{
+            background: "linear-gradient(135deg, #FF7B00, #FF5100)",
+            color: "#fff",
+          }}
         >
           <h2 className="fw-bold">IntelliDocs</h2>
           <p className="mt-3 fs-5">
@@ -176,7 +183,7 @@ function Signup() {
             className="form-control mb-3"
             disabled={loading}
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <div className="position-relative mb-3">
@@ -186,7 +193,7 @@ function Signup() {
               className="form-control"
               disabled={loading}
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
             />
             <span
               onClick={() => setShowPassword(!showPassword)}
@@ -196,22 +203,11 @@ function Signup() {
                 top: "50%",
                 transform: "translateY(-50%)",
                 cursor: "pointer",
-                color: "#666"
+                color: "#666",
               }}
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
-          </div>
-
-          <div style={{ color: muted, fontSize: "13px", marginBottom: "10px" }}>
-            <strong>Password requirements:</strong>
-            <ul style={{ paddingLeft: "18px", marginTop: "5px" }}>
-              <li>✔ 8–64 characters</li>
-              <li>✔ Uppercase letter</li>
-              <li>✔ Lowercase letter</li>
-              <li>✔ Number</li>
-              <li>✔ Special character</li>
-            </ul>
           </div>
 
           <button
@@ -222,7 +218,6 @@ function Signup() {
               background: loading ? "#444" : "#FF7B00",
               color: "#fff",
               borderRadius: "30px",
-              cursor: loading ? "not-allowed" : "pointer"
             }}
           >
             {loading ? "Creating account..." : "Create Account"}
@@ -231,7 +226,7 @@ function Signup() {
           {message && (
             <>
               <p style={{ color: muted }}>
-                ⏳ Resend available in {Math.floor(timer / 60)}:
+                ⏳ Resend in {Math.floor(timer / 60)}:
                 {String(timer % 60).padStart(2, "0")}
               </p>
 
@@ -246,19 +241,21 @@ function Signup() {
             </>
           )}
 
-          <div className="text-center my-3" style={{ color: muted }}>OR</div>
+          <div className="text-center my-3" style={{ color: muted }}>
+            OR
+          </div>
 
-          {/* GOOGLE SIGNUP (UI ONLY LOADER) */}
-          {/* GOOGLE LOGIN */}
+          {/* ✅ GOOGLE LOGIN (FIXED) */}
           <GoogleLogin
             onSuccess={handleGoogleLogin}
-            onError={() => setError("❌ Google Login Failed")}
+            onError={() =>
+              console.warn("Google popup closed or interrupted")
+            }
             theme="filled_black"
             shape="pill"
             size="large"
             width="100%"
           />
-
 
           <div className="text-center mt-4" style={{ color: muted }}>
             Already have an account?{" "}

@@ -1,17 +1,47 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "./ThemeContext";
 import { isAuthenticated, logoutUser } from "./utils/auth";
 
 function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const isLoggedIn = isAuthenticated();
+  const [hoveredItem, setHoveredItem] = useState(null);
 
   const handleLogout = async () => {
     await logoutUser();
     navigate("/login");
   };
+
+  /* 🔥 Dropdown Item Style */
+  const getDropdownItemStyle = (path) => {
+    const isActive = location.pathname === path;
+    const isHovered = hoveredItem === path;
+
+    return {
+      color: theme === "dark" ? "#FFFFFF" : "#000000",
+      backgroundColor:
+        isActive || isHovered
+          ? theme === "dark"
+            ? "#ff7b00"
+            : "#ffe0c2"
+          : "transparent",
+      boxShadow:
+        isHovered && theme === "dark"
+          ? "0 0 12px rgba(255,123,0,0.8)"
+          : "none",
+      fontWeight: isActive ? "600" : "500",
+      borderRadius: "8px",
+      padding: "8px 12px",
+      transition: "all 0.25s ease",
+      cursor: "pointer",
+    };
+  };
+
+  /* 🔥 Hamburger Color */
+  const hamburgerColor = theme === "dark" ? "#FFFFFF" : "#000000";
 
   return (
     <nav
@@ -22,7 +52,6 @@ function Navbar() {
       }}
     >
       <div className="container">
-
         {/* BRAND */}
         <Link
           className="navbar-brand fw-bold fs-4"
@@ -32,14 +61,35 @@ function Navbar() {
           IntelliDocs
         </Link>
 
-        {/* TOGGLER */}
+        {/* 🔥 CUSTOM HAMBURGER (SVG) */}
         <button
           className="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
+          style={{
+            border: "none",
+            padding: "6px",
+            boxShadow:
+              theme === "dark"
+                ? "0 0 10px rgba(255,123,0,0.6)"
+                : "none",
+          }}
         >
-          <span className="navbar-toggler-icon"></span>
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={hamburgerColor}
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
         </button>
 
         {/* COLLAPSE */}
@@ -64,7 +114,7 @@ function Navbar() {
               </button>
             </li>
 
-            {/* ============ LOGIN KE BAAD ============ */}
+            {/* LOGIN KE BAAD */}
             {isLoggedIn && (
               <>
                 {/* SMART TOOLS */}
@@ -84,24 +134,31 @@ function Navbar() {
                   <ul
                     className="dropdown-menu dropdown-menu-end"
                     style={{
-                      backgroundColor: theme === "dark" ? "#1A1A1A" : "#FFF",
+                      backgroundColor: theme === "dark" ? "#1A1A1A" : "#FFFFFF",
+                      border:
+                        theme === "dark"
+                          ? "1px solid #333"
+                          : "1px solid #ddd",
+                      padding: "8px",
                     }}
                   >
-                    <li>
-                      <Link className="dropdown-item" to="/webinsight">
-                        🌐 WebInsight
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/pdfinsight">
-                        📄 PDFInsight
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/replyAI">
-                        🤖 SmartReply AI
-                      </Link>
-                    </li>
+                    {[
+                      ["/webinsight", "🌐 WebInsight AI"],
+                      ["/pdfinsight", "📄 PDFInsight AI"],
+                      ["/replyAI", "🤖 SmartReply AI"],
+                    ].map(([path, label]) => (
+                      <li key={path}>
+                        <Link
+                          to={path}
+                          className="dropdown-item"
+                          style={getDropdownItemStyle(path)}
+                          onMouseEnter={() => setHoveredItem(path)}
+                          onMouseLeave={() => setHoveredItem(null)}
+                        >
+                          {label}
+                        </Link>
+                      </li>
+                    ))}
                   </ul>
                 </li>
 
@@ -144,7 +201,7 @@ function Navbar() {
               </>
             )}
 
-            {/* ============ LOGIN SE PEHLE ============ */}
+            {/* LOGIN SE PEHLE */}
             {!isLoggedIn && (
               <li className="nav-item my-2 my-lg-0">
                 <Link
