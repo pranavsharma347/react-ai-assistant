@@ -1,15 +1,29 @@
+
+
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function ResetPassword() {
-  const { uidb64, token } = useParams();
+  const [params] = useSearchParams();
 
-  /* 🛡 SAFETY GUARD (MOST IMPORTANT) */
+  const uidb64 = params.get("uidb64");
+  const token = params.get("token");
+
+  /* 🛡 SAFETY GUARD */
   if (!uidb64 || !token) {
     return (
-      <div style={{ color: "white", padding: 40 }}>
+      <div
+        style={{
+          minHeight: "100vh",
+          background: "#0D0D0D",
+          color: "#fff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         Invalid or broken reset link.
       </div>
     );
@@ -33,13 +47,16 @@ function ResetPassword() {
   const muted = "#BBBBBB";
   const border = "#333";
 
-  /* 🔐 VERIFY RESET TOKEN */
+  /* 🔐 VERIFY TOKEN (NEW ENDPOINT) */
   useEffect(() => {
     const verifyToken = async () => {
       try {
         await axios.get(
-          `https://geniehub.duckdns.org/user/password-reset/${uidb64}/${token}/`,
-          { timeout: 10000 }
+          "https://geniehub.duckdns.org/user/password-reset/",
+          {
+            params: { uidb64, token },
+            timeout: 10000,
+          }
         );
         setValidToken(true);
       } catch (err) {
@@ -49,6 +66,7 @@ function ResetPassword() {
         setCheckingToken(false);
       }
     };
+
     verifyToken();
   }, [uidb64, token]);
 
@@ -83,10 +101,10 @@ function ResetPassword() {
       await axios.put(
         "https://geniehub.duckdns.org/user/password-reset-complete/",
         {
-          password,
-          password2,
           uidb64,
           token,
+          password,
+          password2,
         },
         { timeout: 10000 }
       );
@@ -210,7 +228,6 @@ function ResetPassword() {
               </span>
             </div>
 
-            {/* BUTTON */}
             <button
               onClick={handleResetPassword}
               disabled={loading}
@@ -238,6 +255,3 @@ function ResetPassword() {
 }
 
 export default ResetPassword;
-
-
-
