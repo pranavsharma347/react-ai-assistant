@@ -30,6 +30,19 @@ body {
   min-height: 100vh;
 }
 
+/* LIGHT MODE */
+body[data-theme="light"] {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+/* DARK MODE */
+body[data-theme="dark"] {
+  background-color: #0f0f0f;
+  color: #ffffff;
+}
+
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
@@ -106,4 +119,42 @@ button:focus-visible {
 .custom-dropdown .dropdown-item:hover {
   background-color: #0d6efd !important; /* blue hover */
   color: #fff !important;
+}
+
+
+
+
+
+.ui-btn {
+  transition: all 0.15s ease-in-out;
+  transform: translateY(0);
+}
+
+/* Hover */
+.ui-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Click (FEEL PART) */
+.ui-btn:active {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* Keyboard focus (accessibility) */
+.ui-btn:focus-visible {
+  outline: 3px solid #ff7b00;
+  outline-offset: 2px;
+}
+
+
+
+#nprogress .bar {
+  background: #00C2FF !important;
+  height: 3px;
+}
+
+#nprogress .spinner {
+  display: none;
 }
